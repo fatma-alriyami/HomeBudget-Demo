@@ -1,0 +1,236 @@
+<section class="dashboard" [attr.aria-busy]="loading()">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">YOUR MONEY, IN FOCUS</p>
+      <h1>Financial overview<span>.</span></h1>
+      <p class="subtitle">
+        A clear picture of your household finances, month by month.
+      </p>
+    </div>
+
+    <div class="page-actions">
+      <label class="month-control">
+        <span>Reporting month</span>
+
+        <input
+          #monthInput
+          type="month"
+          min="2000-01"
+          max="2100-12"
+          [value]="selectedMonth"
+          [disabled]="loading()"
+          (change)="changeMonth(monthInput.value)">
+      </label>
+
+      <button
+        class="refresh-button"
+        type="button"
+        [disabled]="loading()"
+        (click)="loadDashboard()">
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-panel" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading your financial overview...
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-panel" role="alert">
+      <div>
+        <strong>Your data is temporarily unavailable</strong>
+        <p>{{ error() }}</p>
+      </div>
+
+      <button type="button" (click)="loadDashboard()">
+        Try again
+      </button>
+    </div>
+  }
+
+  @if (summary(); as data) {
+    <div class="period-line">
+      <span>{{ periodLabel }}</span>
+      <span>Updated {{ updatedAt() }}</span>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span>Total income</span>
+          <span class="stat-icon income-icon" aria-hidden="true">↙</span>
+        </div>
+
+        <p class="stat-value">
+          {{ data.totalIncome | number:'1.3-3' }}
+          <small>OMR</small>
+        </p>
+
+        <p class="stat-detail">
+          {{ data.incomeCount }} income transactions
+        </p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span>Total expenses</span>
+          <span class="stat-icon expense-icon" aria-hidden="true">↗</span>
+        </div>
+
+        <p class="stat-value">
+          {{ data.totalExpenses | number:'1.3-3' }}
+          <small>OMR</small>
+        </p>
+
+        <p class="stat-detail">
+          {{ data.expenseCount }} expense transactions
+        </p>
+      </article>
+
+      <article class="stat-card net-card">
+        <div class="stat-top">
+          <span>Net cash flow</span>
+          <span class="stat-icon net-icon" aria-hidden="true">≈</span>
+        </div>
+
+        <p class="stat-value">
+          {{ data.netAmount | number:'1.3-3' }}
+          <small>OMR</small>
+        </p>
+
+        <p class="stat-detail">
+          Income minus expenses for this month
+        </p>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span>Planned budget</span>
+          <span class="stat-icon budget-icon" aria-hidden="true">◎</span>
+        </div>
+
+        <p class="stat-value">
+          {{ totalBudget | number:'1.3-3' }}
+          <small>OMR</small>
+        </p>
+
+        <p class="stat-detail">
+          {{ budgets().length }} budgeted categories
+        </p>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <article class="panel budget-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">PLAN & PROGRESS</p>
+            <h2>Monthly budgets</h2>
+          </div>
+
+          <a routerLink="/budgets">View budgets ↗</a>
+        </div>
+
+        @for (budget of budgets(); track budget.id) {
+          <div class="budget-row">
+            <div class="budget-title">
+              <strong>{{ budget.expenseCategoryName }}</strong>
+
+              <span
+                class="status-badge"
+                [class.warning]="budget.usagePercentage >= 80"
+                [class.danger]="budget.spent > budget.amount">
+                {{ budget.status }}
+              </span>
+            </div>
+
+            <div class="budget-amounts">
+              <span>
+                <strong>{{ budget.spent | number:'1.3-3' }}</strong>
+                of {{ budget.amount | number:'1.3-3' }} OMR
+              </span>
+
+              <strong>
+                {{ budget.usagePercentage | number:'1.0-2' }}%
+              </strong>
+            </div>
+
+            <div
+              class="progress-track"
+              role="progressbar"
+              [attr.aria-label]="budget.expenseCategoryName + ' budget usage'"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuenow]="progressWidth(budget.usagePercentage)"
+              [attr.aria-valuetext]="budget.usagePercentage + '% used'">
+
+              <div
+                class="progress-fill"
+                [class.warning]="budget.usagePercentage >= 80"
+                [class.danger]="budget.spent > budget.amount"
+                [style.width.%]="progressWidth(budget.usagePercentage)">
+              </div>
+            </div>
+
+            <p class="remaining">
+              Remaining: {{ budget.remaining | number:'1.3-3' }} OMR
+            </p>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <span class="empty-symbol" aria-hidden="true">◎</span>
+            <h3>No budgets for this month</h3>
+            <p>
+              Set a monthly budget to compare your plan with actual spending.
+            </p>
+          </div>
+        }
+      </article>
+
+      <div class="side-panels">
+        <article class="insight-card">
+          <p class="eyebrow">MONTHLY CHECK-IN</p>
+          <h2>Keep your plans in balance.</h2>
+
+          <p>
+            Review your recorded income, expenses and budgets
+            to understand this month's activity.
+          </p>
+
+          <div class="insight-footer">
+            <span>Categories over budget</span>
+            <strong>{{ overBudgetCount }}</strong>
+          </div>
+        </article>
+
+        <article class="panel quick-links">
+          <p class="eyebrow">EXPLORE YOUR FINANCES</p>
+
+          <a routerLink="/incomes">
+            <span>Income records</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+
+          <a routerLink="/expenses">
+            <span>Expense records</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+
+          <a routerLink="/reports">
+            <span>Financial reports</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </article>
+      </div>
+    </div>
+
+    <p class="report-note">
+      Net cash flow reflects this month's recorded transactions.
+      It does not include an opening balance.
+    </p>
+  }
+</section>

@@ -1,0 +1,110 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+@if (menuOpen) {
+  <button
+    class="menu-backdrop"
+    type="button"
+    aria-label="Close navigation"
+    (click)="closeMenu()">
+  </button>
+}
+
+<aside
+  id="sidebar"
+  class="sidebar"
+  [class.is-open]="menuOpen">
+
+  <a class="brand" routerLink="/dashboard" (click)="closeMenu()">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path
+          d="M3 10.5 12 3l9 7.5M5.5 9v11h13V9M9 20v-7h6v7"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+      </svg>
+    </span>
+
+    <span>
+      <strong>HomeBudget<span class="brand-dot">.</span></strong>
+      <small>Make room for what matters</small>
+    </span>
+  </a>
+
+  <div class="workspace-card">
+    <span class="workspace-avatar" aria-hidden="true">H</span>
+    <div>
+      <strong>My household</strong>
+      <span>Family finance workspace</span>
+    </div>
+  </div>
+
+  <p class="nav-caption">YOUR WORKSPACE</p>
+
+  <nav aria-label="Main navigation">
+    @for (item of navigation; track item.path) {
+      <a
+        class="nav-link"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="closeMenu()">
+
+        <span class="nav-number" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        <span class="nav-arrow" aria-hidden="true">›</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-note">
+    <span class="note-label">A LITTLE CLARITY, EVERY DAY</span>
+    <strong>Plan with purpose.</strong>
+    <p>Keep your household income, spending and monthly plans together.</p>
+    <a routerLink="/budgets" (click)="closeMenu()">
+      Explore budgets <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <span class="currency-dot" aria-hidden="true"></span>
+    Omani Rial <strong>OMR</strong>
+  </div>
+</aside>
+
+<div class="main-shell">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Toggle navigation"
+        aria-controls="sidebar"
+        [attr.aria-expanded]="menuOpen"
+        (click)="menuOpen = !menuOpen">
+        ☰
+      </button>
+
+      <span class="breadcrumb">
+        HomeBudget <span aria-hidden="true">/</span>
+        <strong>Family finance</strong>
+      </span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="currency-badge">OMR</span>
+      <span class="household-label">Household workspace</span>
+      <span class="header-avatar" aria-hidden="true">HB</span>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-content" tabindex="-1">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="page-footer">
+    <span>HomeBudget · A clearer view of your finances</span>
+    <span>Amounts in OMR</span>
+  </footer>
+</div>
