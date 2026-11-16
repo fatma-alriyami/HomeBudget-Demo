@@ -39,9 +39,15 @@ HomeBudget is a full-stack web application designed to help families manage hous
 - `homebudget-client/` — Angular frontend
 - `HomeBudget.sln` — .NET solution
 
+
 ## 📸 Application Screenshots
 
-Screenshots of the application interface will be added soon.
+### Dashboard — Financial Overview
+
+![HomeBudget Dashboard](dashboard.png)
+
+The dashboard provides a monthly overview of household income, expenses, net cash flow, and budget progress.
+
 
 ## 🚀 Getting Started
 
